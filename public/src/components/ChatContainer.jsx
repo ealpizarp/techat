@@ -6,6 +6,7 @@ import Image from "./imageMessage";
 import { v4 as uuidv4 } from "uuid";
 import axios from "axios";
 import { sendMessageRoute, recieveMessageRoute, sendAttachmentRoute } from "../utils/APIRoutes";
+import 'react-medium-image-zoom/dist/styles.css'
 import Contacts from "./Contacts";
 
 export default function ChatContainer({ currentChat, socket }) {
@@ -57,8 +58,9 @@ export default function ChatContainer({ currentChat, socket }) {
     setMessages(msgs);
   };
 
+ 
+    const handleSendAttch = async (file, imageSrc) => {
 
-  const handleSendAttch = async (file) => {
     const data = await JSON.parse(
       localStorage.getItem(process.env.REACT_APP_LOCALHOST_KEY)
     );
@@ -71,13 +73,16 @@ export default function ChatContainer({ currentChat, socket }) {
 
     socket.current.emit("send-msg", messageObject);
 
-
-    await axios.post(sendMessageRoute, {
+    console.log(imageSrc)
+    const DBmessageObject = {
       from: data._id,
       to: currentChat._id,
-      message: file.toString(),
-      type: "file",
-     });
+      message: imageSrc,
+      type: "base64",
+    };
+
+    await axios.post(sendMessageRoute, DBmessageObject);
+
 
     const msgs = [...messages];
     msgs.push({ fromSelf: true, message: file, type: "file"});
@@ -101,6 +106,20 @@ export default function ChatContainer({ currentChat, socket }) {
   }, [messages]);
 
   const renderMessages = (message) => {
+    if (message.type == "base64") {
+      return (
+        <div ref={scrollRef} key={uuidv4()}>
+          <div
+            className={`message ${message.fromSelf ? "sended" : "recieved"}`}
+          >  
+            <img src={message.message} alt="attachment"></img>
+          </div>
+        </div>
+      );
+
+
+    }
+
     if (message.type === "file") {
       const imageBlob = new Blob([message.message]);
       return (
@@ -224,6 +243,13 @@ const Container = styled.div`
           padding: 0.6rem;
         }
       }
+      img {
+      display: flex;
+      width: 180px;
+      height: auto;
+      border-radius: 1rem;
+      
+  }
     }
     .sended {
       justify-content: flex-end;

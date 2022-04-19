@@ -1,6 +1,7 @@
 const Messages = require("../models/messageModel");
 const Attachments = require("../models/attachmentModel")
 const fs = require("fs");
+const { text } = require("express");
 
 module.exports.getMessages = async (req, res, next) => {
   try {
@@ -16,6 +17,7 @@ module.exports.getMessages = async (req, res, next) => {
       return {
         fromSelf: msg.sender.toString() === from,
         message: msg.message.text,
+        type: msg.type,
       };
     });
     res.json(projectedMessages);

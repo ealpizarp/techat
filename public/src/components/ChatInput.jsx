@@ -1,11 +1,13 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { HiArrowNarrowUp } from "react-icons/hi";
 import { IoMdSend } from "react-icons/io";
 import styled from "styled-components";
 
 export default function ChatInput({ handleSendMsg, handleSendAttch }) {
+
   const [msg, setMsg] = useState("");
   const [file, setFile] = useState();
+  var imgSrc;
 
   const selectFile = (event) => {
     setMsg(event.target.files[0].name);
@@ -15,14 +17,19 @@ export default function ChatInput({ handleSendMsg, handleSendAttch }) {
   const sendChat = (event) => {
     event.preventDefault();
     if (file) {
-      handleSendAttch(file);
-      setMsg("");
+      const reader = new FileReader();
+      reader.addEventListener('load', (event) => {
+      imgSrc = event.target.result.toString("Base64");
+      handleSendAttch(file, imgSrc);
+    });
+    reader.readAsDataURL(file);
+    event.target.value = null;
     } else {
       if (msg.length > 0) {
         handleSendMsg(msg);
-        setMsg("");
       }
     }
+    setMsg("");
     setFile();
   };
 

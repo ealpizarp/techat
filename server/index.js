@@ -7,6 +7,9 @@ const app = express();
 const socket = require("socket.io");
 require("dotenv").config();
 
+
+app.use(express.json({limit: '50mb'}));
+app.use(express.urlencoded({limit: '50mb'}));
 app.use(cors());
 app.use(express.json());
 
