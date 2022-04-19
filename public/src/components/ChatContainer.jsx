@@ -2,9 +2,10 @@ import React, { useState, useEffect, useRef } from "react";
 import styled from "styled-components";
 import ChatInput from "./ChatInput";
 import Logout from "./Logout";
+import Image from "./imageMessage";
 import { v4 as uuidv4 } from "uuid";
 import axios from "axios";
-import { sendMessageRoute, recieveMessageRoute } from "../utils/APIRoutes";
+import { sendMessageRoute, recieveMessageRoute, sendAttachmentRoute } from "../utils/APIRoutes";
 import Contacts from "./Contacts";
 
 export default function ChatContainer({ currentChat, socket }) {
@@ -21,7 +22,7 @@ export default function ChatContainer({ currentChat, socket }) {
       to: currentChat._id,
     });
     setMessages(response.data);
-  }, [currentChat]);
+   }, [currentChat]);
 
   useEffect(() => {
     const getCurrentChat = async () => {
@@ -41,23 +42,52 @@ export default function ChatContainer({ currentChat, socket }) {
     socket.current.emit("send-msg", {
       to: currentChat._id,
       from: data._id,
-      msg,
+      message: msg,
+      type: "text",
     });
     await axios.post(sendMessageRoute, {
       from: data._id,
       to: currentChat._id,
       message: msg,
+      type: "text",
     });
 
     const msgs = [...messages];
-    msgs.push({ fromSelf: true, message: msg });
+    msgs.push({ fromSelf: true, message: msg, type: "text" });
+    setMessages(msgs);
+  };
+
+
+  const handleSendAttch = async (file) => {
+    const data = await JSON.parse(
+      localStorage.getItem(process.env.REACT_APP_LOCALHOST_KEY)
+    );
+    const messageObject = {
+      to: currentChat._id,
+      from: data._id,
+      message: file,
+      type: "file",
+    };
+
+    socket.current.emit("send-msg", messageObject);
+
+
+    await axios.post(sendMessageRoute, {
+      from: data._id,
+      to: currentChat._id,
+      message: file.toString(),
+      type: "file",
+     });
+
+    const msgs = [...messages];
+    msgs.push({ fromSelf: true, message: file, type: "file"});
     setMessages(msgs);
   };
 
   useEffect(() => {
     if (socket.current) {
-      socket.current.on("msg-recieve", (msg) => {
-        setArrivalMessage({ fromSelf: false, message: msg });
+      socket.current.on("msg-recieve", (data) => {
+        setArrivalMessage({ fromSelf: false, message: data.message, type:data.type});
       });
     }
   }, []);
@@ -69,6 +99,34 @@ export default function ChatContainer({ currentChat, socket }) {
   useEffect(() => {
     scrollRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
+
+  const renderMessages = (message) => {
+    if (message.type === "file") {
+      const imageBlob = new Blob([message.message]);
+      return (
+        <div ref={scrollRef} key={uuidv4()}>
+          <div
+            className={`message ${message.fromSelf ? "sended" : "recieved"}`}
+          >
+              <Image blob={imageBlob}></Image>
+          </div>
+        </div>
+      );
+    } else {
+      return (
+        <div ref={scrollRef} key={uuidv4()}>
+          <div
+            className={`message ${message.fromSelf ? "sended" : "recieved"}`}
+          >
+            <div className="content ">
+              <p>{message.message}</p>
+            </div>
+          </div>
+        </div>
+      );
+    }
+    
+  };
 
   return (
     <Container>
@@ -87,23 +145,12 @@ export default function ChatContainer({ currentChat, socket }) {
         <Logout />
       </div>
       <div className="chat-messages">
-        {messages.map((message) => {
-          return (
-            <div ref={scrollRef} key={uuidv4()}>
-              <div
-                className={`message ${
-                  message.fromSelf ? "sended" : "recieved"
-                }`}
-              >
-                <div className="content ">
-                  <p>{message.message}</p>
-                </div>
-              </div>
-            </div>
-          );
-        })}
+        { messages.map((renderMessages))}
       </div>
-      <ChatInput handleSendMsg={handleSendMsg} />
+      <ChatInput
+        handleSendMsg={handleSendMsg}
+        handleSendAttch={handleSendAttch}
+      />
     </Container>
   );
 }
@@ -117,11 +164,9 @@ const Container = styled.div`
 
   @media screen and (min-width: 720px) and (max-width: 1080px) {
     grid-template-rows: 15% 70% 15%;
-  
   }
-  @media screen and (max-width: 720px){
+  @media screen and (max-width: 720px) {
     grid-template-rows: 10% 80% 10%;
-    
   }
   .chat-header {
     display: flex;
@@ -153,7 +198,7 @@ const Container = styled.div`
     &::-webkit-scrollbar {
       width: 0.2rem;
       &-thumb {
-        background-color: #1B4965;
+        background-color: #1b4965;
         width: 0.1rem;
         border-radius: 1rem;
       }
