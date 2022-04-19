@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import styled from "styled-components";
-import Robot from "../assets/robot.gif";
+import Robot from "../assets/robot2.gif";
 export default function Welcome() {
   const [userName, setUserName] = useState("");
   useEffect(async () => {
@@ -27,7 +27,7 @@ const Container = styled.div`
   color: white;
   flex-direction: column;
   img {
-    height: 20rem;
+    height: 10rem;
   }
   span {
     color: #06bee1;
