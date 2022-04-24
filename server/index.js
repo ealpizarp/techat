@@ -33,7 +33,7 @@ const server = app.listen(process.env.PORT, () =>
 );
 const io = socket(server, {
   cors: {
-    origin: "http://localhost:3000",
+    origin: "https://master.d3eu48e9jqn9ws.amplifyapp.com",
     credentials: true,
   },
 });
