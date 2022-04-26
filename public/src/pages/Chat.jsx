@@ -71,6 +71,7 @@ const Container = styled.div`
   align-items: center;
   background-color: #022B3A;
   .container {
+    overflow: scroll;
     height: 85vh;
     width: 85vw;
     background-color: #1F7A8C;
