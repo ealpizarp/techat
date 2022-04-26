@@ -201,6 +201,7 @@ const Container = styled.div`
     }
 
     .current-user {
+      display: none;
       position: absolute;
       bottom: 5px;
       .avatar {
