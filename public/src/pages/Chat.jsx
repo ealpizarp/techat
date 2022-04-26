@@ -71,7 +71,6 @@ const Container = styled.div`
   align-items: center;
   background-color: #022B3A;
   .container {
-    overflow: scroll;
     height: 85vh;
     width: 85vw;
     background-color: #1F7A8C;
@@ -84,6 +83,7 @@ const Container = styled.div`
     }
     @media screen and (max-width: 720px) {
       display: flex;
+      overflow: scroll;
       height: 100%;
       width: 100%;
     }
