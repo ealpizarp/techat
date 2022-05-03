@@ -67,7 +67,7 @@ export default function Reminder() {
         <form action="" onSubmit={(event) => handleSubmit(event)}>
           <div className="brand">
             <img src={Logo} alt="logo" />
-            <h1>Te<span class="light">ch</span><span class="dark">at</span></h1>
+            <h1>Te<span class="light">ch</span><span class="dark">at</span> <span class="black"> reminders </span></h1>
           </div>
           <input
             type="text"
@@ -136,6 +136,9 @@ const FormContainer = styled.div`
     .dark{
         color:#b1a7a6;
     }
+    .black{
+      color:#282828;
+    }
 
     }
   }
@@ -146,7 +149,7 @@ const FormContainer = styled.div`
     gap: 2rem;
     background-color: #1F7A8C;
     border-radius: 2rem;
-    padding: 5rem;
+    padding: 2rem;
   }
   input {
     background-color: transparent;

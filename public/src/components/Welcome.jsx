@@ -12,7 +12,7 @@ export default function Welcome() {
   }, []);
   return (
     <Container>
-      <img src={Robot} alt="" />
+      <img src={Robot} alt="Welcome image" />
       <h1>
         Hi, <span>{userName}!</span>
       </h1>
@@ -34,11 +34,8 @@ const Container = styled.div`
   }
 
   @media screen and (max-width:720px) {
-    display: flex;
+    display: flexbox;
 
-    align-items: center;
-    justify-content: center;
- 
     .h1 {
       font-size: 4rem;
     }
