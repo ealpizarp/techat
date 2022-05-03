@@ -1,8 +1,11 @@
-const { addMessage, getMessages, addAttachment } = require("../controllers/messageController");
+const { addMessage,
+     getMessages,
+     addReminder } = require("../controllers/messageController");
+
 const router = require("express").Router();
 
 router.post("/addmsg/", addMessage);
-router.post("/addatch/", addAttachment);
 router.post("/getmsg/", getMessages);
+router.post("/getrmd/", addReminder);
 
 module.exports = router;

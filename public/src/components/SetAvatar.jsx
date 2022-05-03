@@ -157,4 +157,29 @@ const Container = styled.div`
       background-color: #034078;
     }
   }
+
+
+  @media screen and (max-width: 720px) {
+    .avatars {
+    display: flex;
+    gap: 0.3rem;
+
+    .avatar {
+      border: 0.2rem solid transparent;
+      padding: 0.2rem;
+      border-radius: 5rem;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      transition: 0.5s ease-in-out;
+      img {
+        height: 4rem;
+        transition: 0.5s ease-in-out;
+      }
+    }
+    .selected {
+      border: 0.4rem solid #06bee1;
+    }
+  }
+}
 `;

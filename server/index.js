@@ -36,6 +36,7 @@ const io = socket(server, {
     origin: "https://master.d3eu48e9jqn9ws.amplifyapp.com",
     credentials: true,
   },
+  maxHttpBufferSize: 1e8
 });
 
 global.onlineUsers = new Map();
