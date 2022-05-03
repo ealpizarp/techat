@@ -3,6 +3,7 @@ import styled from "styled-components";
 import ChatInput from "./ChatInput";
 import Logout from "./Logout";
 import Image from "./imageMessage";
+import Video from "./videoMessage";
 import { v4 as uuidv4 } from "uuid";
 import axios from "axios";
 import { sendMessageRoute, recieveMessageRoute, sendAttachmentRoute } from "../utils/APIRoutes";
@@ -59,33 +60,51 @@ export default function ChatContainer({ currentChat, socket }) {
   };
 
  
-    const handleSendAttch = async (file, imageSrc) => {
+   const handleSendAttch = async (file, imageSrc) => {
 
     const data = await JSON.parse(
       localStorage.getItem(process.env.REACT_APP_LOCALHOST_KEY)
     );
+
+    const type = file.type.split('/')[0];
+    var SocketTypeHeader;
+
+
+    if(type === "image") {
+      SocketTypeHeader = "imageSocket"  
+    } else if(type === "video"){
+      SocketTypeHeader = "videoSocket"
+    }
+
     const messageObject = {
       to: currentChat._id,
       from: data._id,
       message: file,
-      type: "file",
+      type: SocketTypeHeader,
     };
-
     socket.current.emit("send-msg", messageObject);
 
-    console.log(imageSrc)
+    var typeHeader;
+
+    if(type === "image") {
+      typeHeader = "image"  
+    }
+    if(type === "video"){
+      typeHeader = "video"
+    }
+
     const DBmessageObject = {
       from: data._id,
       to: currentChat._id,
       message: imageSrc,
-      type: "base64",
+      type: typeHeader,
     };
 
     await axios.post(sendMessageRoute, DBmessageObject);
 
 
     const msgs = [...messages];
-    msgs.push({ fromSelf: true, message: file, type: "file"});
+    msgs.push({ fromSelf: true, message: file, type: SocketTypeHeader});
     setMessages(msgs);
   };
 
@@ -106,7 +125,7 @@ export default function ChatContainer({ currentChat, socket }) {
   }, [messages]);
 
   const renderMessages = (message) => {
-    if (message.type == "base64") {
+    if (message.type === "image") {
       return (
         <div ref={scrollRef} key={uuidv4()}>
           <div
@@ -116,11 +135,40 @@ export default function ChatContainer({ currentChat, socket }) {
           </div>
         </div>
       );
+    }
+    
+    if (message.type === "video") {
+      return (
+        <div ref={scrollRef} key={uuidv4()}>
+          <div
+            className={`message ${message.fromSelf ? "sended" : "recieved"}`}
+          >  
+          <video width="220" height="140" controls>
+            <source src={message.message} type="video/mp4"></source>
+          </video>
 
-
+          </div>
+        </div>
+      );
     }
 
-    if (message.type === "file") {
+    if (message.type === "videoSocket") {
+      const videoBlob = new Blob([message.message], {type:"video/mp4"});
+      console.log(videoBlob);
+      
+      return (
+        <div ref={scrollRef} key={uuidv4()}>
+          <div
+            className={`message ${message.fromSelf ? "sended" : "recieved"}`}
+          >
+              <Video blob={videoBlob} > </Video>
+          </div>
+        </div>
+      );
+    }
+    
+    if (message.type === "imageSocket") {
+      console.log(message.mesage);
       const imageBlob = new Blob([message.message]);
       return (
         <div ref={scrollRef} key={uuidv4()}>
@@ -243,6 +291,14 @@ const Container = styled.div`
           padding: 0.6rem;
         }
       }
+      video {
+      display: flex;
+      width: 220px;
+      height: auto;
+      border-radius: 1rem;
+      
+      }
+      
       img {
       display: flex;
       width: 180px;

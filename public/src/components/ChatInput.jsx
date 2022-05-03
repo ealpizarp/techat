@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from "react";
 import { HiArrowNarrowUp } from "react-icons/hi";
 import { IoMdSend } from "react-icons/io";
+import { useNavigate } from "react-router-dom";
 import styled from "styled-components";
 
 export default function ChatInput({ handleSendMsg, handleSendAttch }) {
-
+  const navigate = useNavigate();
   const [msg, setMsg] = useState("");
   const [file, setFile] = useState();
   var imgSrc;
@@ -14,19 +15,31 @@ export default function ChatInput({ handleSendMsg, handleSendAttch }) {
     setFile(event.target.files[0]);
   };
 
+  const isReminder = (msg) => {
+    if(msg === "--remind") {
+      return true
+    }
+    return false
+  }
+
   const sendChat = (event) => {
-    event.preventDefault();
-    if (file) {
-      const reader = new FileReader();
-      reader.addEventListener('load', (event) => {
-      imgSrc = event.target.result.toString("Base64");
-      handleSendAttch(file, imgSrc);
-    });
-    reader.readAsDataURL(file);
-    event.target.value = null;
+
+    if(isReminder(msg)) {
+      navigate("/remind");
     } else {
-      if (msg.length > 0) {
-        handleSendMsg(msg);
+      event.preventDefault();
+      if (file) {
+        const reader = new FileReader();
+        reader.addEventListener('load', (event) => {
+        imgSrc = event.target.result.toString("Base64");
+        handleSendAttch(file, imgSrc);
+      });
+      reader.readAsDataURL(file);
+      event.target.value = null;
+      } else {
+        if (msg.length > 0) {
+          handleSendMsg(msg);
+        }
       }
     }
     setMsg("");

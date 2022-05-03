@@ -7,3 +7,4 @@ export const sendMessageRoute = `${host}/api/messages/addmsg`;
 export const sendAttachmentRoute = `${host}/api/messages/addatch`;
 export const recieveMessageRoute = `${host}/api/messages/getmsg`;
 export const setAvatarRoute = `${host}/api/auth/setavatar`;
+export const sendReminderRoute = `${host}/api/messages/addrmd`;
